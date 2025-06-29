@@ -1,16 +1,16 @@
 "use client"
 
-import { useState } from "react"
-import { Plus, Search, FileCheck, Clock, CheckCircle, XCircle } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { DashboardHeader } from "@/components/dashboard-header"
+import {useState} from "react"
+import {CheckCircle, Clock, FileCheck, Plus, Search, XCircle} from "lucide-react"
+import {Button} from "@/components/ui/button"
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
+import {Input} from "@/components/ui/input"
+import {Label} from "@/components/ui/label"
+import {Textarea} from "@/components/ui/textarea"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
+import {Badge} from "@/components/ui/badge"
+import {DashboardHeader} from "@/components/dashboard-header"
 import {
     Dialog,
     DialogContent,
@@ -19,8 +19,8 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { DatePickerWithRange } from "@/components/date-range-picker"
-import type { DateRange } from "react-day-picker"
+import {DatePickerWithRange} from "@/components/date-range-picker"
+import type {DateRange} from "react-day-picker"
 
 export default function RequestsPage() {
     const [searchTerm, setSearchTerm] = useState("")
@@ -96,21 +96,21 @@ export default function RequestsPage() {
             case "pending":
                 return (
                     <Badge variant="secondary" className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
+                        <Clock className="h-3 w-3"/>
                         Chờ duyệt
                     </Badge>
                 )
             case "approved":
                 return (
                     <Badge variant="default" className="flex items-center gap-1 bg-green-600">
-                        <CheckCircle className="h-3 w-3" />
+                        <CheckCircle className="h-3 w-3"/>
                         Đã duyệt
                     </Badge>
                 )
             case "rejected":
                 return (
                     <Badge variant="destructive" className="flex items-center gap-1">
-                        <XCircle className="h-3 w-3" />
+                        <XCircle className="h-3 w-3"/>
                         Từ chối
                     </Badge>
                 )
@@ -121,7 +121,7 @@ export default function RequestsPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <DashboardHeader />
+            <DashboardHeader/>
             <main className="container mx-auto px-4 py-8">
                 <div className="mb-8 flex items-center justify-between">
                     <div>
@@ -132,7 +132,7 @@ export default function RequestsPage() {
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
                             <Button className="flex items-center gap-2">
-                                <Plus className="h-4 w-4" />
+                                <Plus className="h-4 w-4"/>
                                 Tạo yêu cầu
                             </Button>
                         </DialogTrigger>
@@ -144,14 +144,14 @@ export default function RequestsPage() {
                             <div className="grid gap-6 py-4">
                                 <div className="space-y-2">
                                     <Label>Khoảng thời gian</Label>
-                                    <DatePickerWithRange date={dateRange} setDate={setDateRange} />
+                                    <DatePickerWithRange date={dateRange} setDate={setDateRange}/>
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label>Loại yêu cầu</Label>
                                     <Select value={requestType} onValueChange={setRequestType}>
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Chọn loại yêu cầu" />
+                                            <SelectValue placeholder="Chọn loại yêu cầu"/>
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="di-tre">Đi trễ</SelectItem>
@@ -185,7 +185,7 @@ export default function RequestsPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <FileCheck className="h-5 w-5" />
+                                <FileCheck className="h-5 w-5"/>
                                 Danh sách yêu cầu
                             </CardTitle>
                             <CardDescription>Tổng cộng {requests.length} yêu cầu đã tạo</CardDescription>
@@ -193,7 +193,8 @@ export default function RequestsPage() {
                         <CardContent>
                             <div className="mb-6">
                                 <div className="relative">
-                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                                    <Search
+                                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"/>
                                     <Input
                                         placeholder="Tìm kiếm yêu cầu..."
                                         value={searchTerm}
@@ -214,7 +215,7 @@ export default function RequestsPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {filteredRequests.map((request) => (
+                                    {requests.map((request) => (
                                         <TableRow key={request.id}>
                                             <TableCell>
                                                 <Badge variant="outline">{request.type}</Badge>
@@ -226,7 +227,8 @@ export default function RequestsPage() {
                                                 </div>
                                             </TableCell>
                                             <TableCell>{getStatusBadge(request.status)}</TableCell>
-                                            <TableCell className="text-sm text-gray-500">{request.submittedAt}</TableCell>
+                                            <TableCell
+                                                className="text-sm text-gray-500">{request.submittedAt}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

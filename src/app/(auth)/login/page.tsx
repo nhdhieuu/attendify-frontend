@@ -10,8 +10,13 @@ import {Label} from "@/components/ui/label"
 import {Checkbox} from "@/components/ui/checkbox"
 import {Separator} from "@/components/ui/separator"
 import {Alert, AlertDescription} from "@/components/ui/alert"
+import {useAuthStore} from "@/stores/useAuthStore";
+import {loginApi} from "@/services/auth/login.api";
+import {AuthRequestBody} from "@/types/auth.interface";
+import {useRouter} from "next/navigation";
 
 export default function LoginPage() {
+    const router = useRouter()
     const [showPassword, setShowPassword] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState("")
@@ -20,6 +25,7 @@ export default function LoginPage() {
         password: "",
         rememberMe: false,
     })
+    const loginStore = useAuthStore(state => state.login)
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target
@@ -67,16 +73,11 @@ export default function LoginPage() {
         setError("")
 
         try {
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 2000))
-
-            // Mock authentication logic
-            if (formData.email === "admin@company.com" && formData.password === "123456") {
-                // Redirect to dashboard
-                window.location.href = "/"
-            } else {
-                setError("Email hoặc mật khẩu không chính xác")
-            }
+            const loginRequestBody = (({rememberMe, ...rest}) => rest)(formData) as AuthRequestBody;
+            console.log(loginRequestBody)
+            const res = await loginApi(loginRequestBody)
+            loginStore(res.data)
+            router.push('/')
         } catch (err) {
             setError("Đã xảy ra lỗi. Vui lòng thử lại.")
         } finally {
