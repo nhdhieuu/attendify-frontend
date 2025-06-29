@@ -24,13 +24,7 @@ export function QuickStats() {
             icon: TrendingUp,
             color: "text-purple-600",
         },
-        {
-            title: "Đúng giờ",
-            value: "95%",
-            description: "Tỷ lệ",
-            icon: Users,
-            color: "text-orange-600",
-        },
+
     ]
 
     return (
