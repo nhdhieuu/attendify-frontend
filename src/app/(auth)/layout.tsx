@@ -1,16 +1,16 @@
 import type React from "react"
 import type {Metadata} from "next"
 import {Inter} from "next/font/google"
-import "./globals.css"
+import "../globals.css"
 
 const inter = Inter({subsets: ["latin"]})
 
 export const metadata: Metadata = {
-    title: "Hệ thống chấm công",
-    description: "Ứng dụng quản lý chấm công nhân viên",
+    title: "Đăng nhập - Hệ thống chấm công",
+    description: "Đăng nhập vào hệ thống quản lý chấm công nhân viên",
 }
 
-export default function RootLayout({
+export default function AuthLayout({
                                        children,
                                    }: {
     children: React.ReactNode
