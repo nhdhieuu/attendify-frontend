@@ -31,9 +31,6 @@ export function TimeTracker() {
         );
     }, []);
     useEffect(() => {
-        console.log(token)
-    }, [token]);
-    useEffect(() => {
         const timer = setInterval(() => {
             setCurrentTime(new Date())
 
@@ -107,7 +104,8 @@ export function TimeTracker() {
 
                     <div className="flex justify-center space-x-4">
                         {!isCheckedIn ? (
-                            <Button onClick={handleCheckIn} size="lg" className="px-8">
+                            <Button onClick={handleCheckIn} size="lg"
+                                    className="px-8 bg-blue-600 hover:bg-blue-500 text-white">
                                 Chấm công vào
                             </Button>
                         ) : (

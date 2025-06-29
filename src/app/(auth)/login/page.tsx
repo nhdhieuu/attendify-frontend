@@ -14,6 +14,7 @@ import {useAuthStore} from "@/stores/useAuthStore";
 import {loginApi} from "@/services/auth/login.api";
 import {AuthRequestBody} from "@/types/auth.interface";
 import {useRouter} from "next/navigation";
+import {setUserData} from "@/services/cookies";
 
 export default function LoginPage() {
     const router = useRouter()
@@ -77,6 +78,7 @@ export default function LoginPage() {
             console.log(loginRequestBody)
             const res = await loginApi(loginRequestBody)
             loginStore(res.data)
+            await setUserData(res.data)
             router.push('/')
         } catch (err) {
             setError("Đã xảy ra lỗi. Vui lòng thử lại.")
