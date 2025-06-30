@@ -77,7 +77,7 @@ export function AttendanceChart() {
                                 formatter={(value) => [`${value}h`, "Giờ làm việc"]}
                                 labelFormatter={(label) => `Thứ ${label}`}
                             />
-                            <Bar dataKey="hours" fill="var(--color-hours)" radius={[4, 4, 0, 0]}/>
+                            <Bar dataKey="hours" fill="#2563eb" radius={[4, 4, 0, 0]}/>
                         </BarChart>
                     </ResponsiveContainer>
                 </ChartContainer>

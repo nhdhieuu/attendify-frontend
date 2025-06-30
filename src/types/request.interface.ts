@@ -19,6 +19,7 @@ export interface RequestResponse {
     status: RequestStatus,
     "type": RequestType,
     "reason": string,
+    fromDate: string,
     "toDate": string,
     "createdAt": string
 }
@@ -27,4 +28,20 @@ export enum RequestStatus {
     PENDING = "PENDING",
     APPROVED = "APPROVED",
     REJECTED = "REJECTED"
+}
+
+export interface ListRequestParams {
+    page: number,
+    limit: number,
+    status: RequestStatus | null,
+    userId: string | null,
+}
+
+export interface ListRequestResponse {
+    data: RequestResponse[]
+    "page": number,
+    "limit": number,
+    "totalElements": number,
+    "totalPages": number,
+    "lastPage": boolean,
 }

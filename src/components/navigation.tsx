@@ -26,7 +26,7 @@ export function Navigation() {
             <div className="p-6">
                 <div className="flex items-center space-x-2">
                     <Clock className="h-8 w-8 text-blue-600"/>
-                    <span className="text-xl font-bold text-gray-900">TimeTracker</span>
+                    <span className="text-xl font-bold text-gray-900">Attendify</span>
                 </div>
             </div>
 

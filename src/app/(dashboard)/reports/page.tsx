@@ -12,21 +12,24 @@ import {getMonthlyReport} from "@/services/report/report.api";
 import {AttendanceReport, AttendanceReportParams} from "@/types/reports.interface";
 import {CheckInStatus, CheckOutStatus} from "@/types/operation.interface";
 import {extractTimeHHMM} from "@/helpers/extractTimeHHMM";
+import LoadingComponent from "@/components/loading";
 
 export default function ReportsPage() {
     const currentMonth = (new Date().getMonth() + 1).toString();
     const [selectedMonth, setSelectedMonth] = useState(currentMonth);
     const [selectedYear, setSelectedYear] = useState("2025")
+    const [loading, setLoading] = useState(false)
     const [reportsData, setReportsData] = useState<AttendanceReport[]>([])
     const fetchData = async (): Promise<void> => {
         try {
+            setLoading(true)
             const params: AttendanceReportParams = {
                 month: parseInt(selectedMonth),
                 year: parseInt(selectedYear),
             }
             const res = await getMonthlyReport(params)
             setReportsData(res.data)
-            console.log("Fetched report data:", res.data)
+            setLoading(false)
         } catch (error) {
             console.error("Error fetching report data:", error)
         }
@@ -34,7 +37,7 @@ export default function ReportsPage() {
     useEffect(() => {
         fetchData()
     }, []);
-
+    if (loading) return <LoadingComponent/>
     return (
         <div className="min-h-screen bg-gray-50">
             <DashboardHeader/>
@@ -95,7 +98,7 @@ export default function ReportsPage() {
                                 <Button variant="outline" onClick={fetchData}>
                                     Lọc
                                 </Button>
-                                <Button className="flex items-center gap-2">
+                                <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500">
                                     <Download className="h-4 w-4"/>
                                     Xuất Excel
                                 </Button>

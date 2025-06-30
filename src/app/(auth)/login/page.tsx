@@ -103,7 +103,7 @@ export default function LoginPage() {
                 <div className="text-center mb-8">
                     <div className="flex items-center justify-center space-x-2 mb-4">
                         <Clock className="h-10 w-10 text-blue-600"/>
-                        <span className="text-3xl font-bold text-gray-900">TimeTracker</span>
+                        <span className="text-3xl font-bold text-gray-900">Attendify</span>
                     </div>
                     <h1 className="text-2xl font-bold text-gray-900 mb-2">Chào mừng trở lại</h1>
                     <p className="text-gray-600">Đăng nhập vào hệ thống chấm công</p>

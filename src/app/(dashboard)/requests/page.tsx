@@ -1,6 +1,6 @@
 "use client"
 
-import {useState} from "react"
+import {useEffect, useState} from "react"
 import {CheckCircle, Clock, FileCheck, Plus, XCircle} from "lucide-react"
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
@@ -20,8 +20,11 @@ import {
 } from "@/components/ui/dialog"
 import {DatePickerWithRange} from "@/components/date-range-picker"
 import type {DateRange} from "react-day-picker"
-import {RequestBody, RequestType} from "@/types/request.interface";
-import {createRequestApi} from "@/services/request/request.api";
+import {ListRequestParams, RequestBody, RequestResponse, RequestStatus, RequestType} from "@/types/request.interface";
+import {createRequestApi, getListRequests} from "@/services/request/request.api";
+import {useAuthStore} from "@/stores/useAuthStore";
+import {formatDateToYMD} from "@/helpers/extractTimeHHMM";
+import LoadingComponent from "@/components/loading"
 
 const requestTypeSelect = [
     {label: "Đi trễ", value: RequestType.LATE_ARRIVAL},
@@ -29,53 +32,49 @@ const requestTypeSelect = [
     {label: "Về sớm", value: RequestType.EARLY_LEAVE}
 ]
 
+function getRequestBadgeProps(type: RequestType): {
+    label: string;
+    variant: "default" | "secondary" | "destructive" | "outline" | null | undefined
+} {
+    switch (type) {
+        case RequestType.LATE_ARRIVAL:
+            return {label: "Đi trễ", variant: "destructive"};
+        case RequestType.REMOTE:
+            return {label: "Làm online", variant: "secondary"};
+        case RequestType.EARLY_LEAVE:
+            return {label: "Về sớm", variant: "outline"};
+        default:
+            return {label: "Không xác định", variant: "outline"};
+    }
+}
+
 export default function RequestsPage() {
-    const [searchTerm, setSearchTerm] = useState("")
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [dateRange, setDateRange] = useState<DateRange | undefined>()
     const [requestType, setRequestType] = useState("")
     const [reason, setReason] = useState("")
-
-    const requests = [
-        {
-            id: 1,
-            type: "Đi trễ",
-            dateRange: "15/01/2024 - 15/01/2024",
-            reason: "Tắc đường do mưa lớn",
-            status: "pending",
-            submittedAt: "14/01/2024 16:30",
-        },
-        {
-            id: 2,
-            type: "Làm online",
-            dateRange: "10/01/2024 - 12/01/2024",
-            reason: "Con nhỏ ốm, cần chăm sóc tại nhà",
-            status: "approved",
-            submittedAt: "08/01/2024 09:15",
-        },
-        {
-            id: 3,
-            type: "Về sớm",
-            dateRange: "05/01/2024 - 05/01/2024",
-            reason: "Có việc cá nhân cần giải quyết gấp",
-            status: "rejected",
-            submittedAt: "04/01/2024 14:20",
-        },
-        {
-            id: 4,
-            type: "Làm online",
-            dateRange: "20/01/2024 - 22/01/2024",
-            reason: "Sửa chữa nhà, không thể đến văn phòng",
-            status: "approved",
-            submittedAt: "18/01/2024 11:45",
-        },
-    ]
-
-    /* const filteredRequests = requests.filter(
-         (request) =>
-             request.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-             request.reason.toLowerCase().includes(searchTerm.toLowerCase()),
-     )*/
+    const [listRequests, setListRequests] = useState<RequestResponse[]>([])
+    const user = useAuthStore((state) => state.user)
+    const [loading, setLoading] = useState(true)
+    const fetchData = async () => {
+        try {
+            const params: ListRequestParams = {
+                page: 1,
+                limit: 100,
+                status: null,
+                userId: user?.id || null
+            }
+            const res = await getListRequests(params)
+            console.log(res.data.data)
+            setListRequests(res.data.data)
+            setLoading(false)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    useEffect(() => {
+        fetchData()
+    }, [])
 
     const handleSubmitRequest = () => {
         if (!dateRange || !requestType || !reason.trim()) {
@@ -126,23 +125,23 @@ export default function RequestsPage() {
     };
 
 
-    const getStatusBadge = (status: string) => {
+    const getStatusBadge = (status: RequestStatus) => {
         switch (status) {
-            case "pending":
+            case RequestStatus.PENDING:
                 return (
                     <Badge variant="secondary" className="flex items-center gap-1">
                         <Clock className="h-3 w-3"/>
                         Chờ duyệt
                     </Badge>
                 )
-            case "approved":
+            case RequestStatus.APPROVED:
                 return (
                     <Badge variant="default" className="flex items-center gap-1 bg-green-600">
                         <CheckCircle className="h-3 w-3"/>
                         Đã duyệt
                     </Badge>
                 )
-            case "rejected":
+            case RequestStatus.REJECTED:
                 return (
                     <Badge variant="destructive" className="flex items-center gap-1">
                         <XCircle className="h-3 w-3"/>
@@ -153,7 +152,7 @@ export default function RequestsPage() {
                 return <Badge variant="secondary">{status}</Badge>
         }
     }
-
+    if (loading) return <LoadingComponent/>
     return (
         <div className="min-h-screen bg-gray-50">
             <DashboardHeader/>
@@ -226,22 +225,9 @@ export default function RequestsPage() {
                                 <FileCheck className="h-5 w-5"/>
                                 Danh sách yêu cầu
                             </CardTitle>
-                            <CardDescription>Tổng cộng {requests.length} yêu cầu đã tạo</CardDescription>
+                            <CardDescription>Tổng cộng {listRequests.length} yêu cầu đã tạo</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            {/*<div className="mb-6">
-                                <div className="relative">
-                                    <Search
-                                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"/>
-                                    <Input
-                                        placeholder="Tìm kiếm yêu cầu..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="pl-10"
-                                    />
-                                </div>
-                            </div>*/}
-
                             <Table>
                                 <TableHeader>
                                     <TableRow>
@@ -253,12 +239,22 @@ export default function RequestsPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {requests.map((request) => (
+                                    {listRequests.map((request) => (
                                         <TableRow key={request.id}>
                                             <TableCell>
-                                                <Badge variant="outline">{request.type}</Badge>
+                                                {(() => {
+                                                    const {label, variant} = getRequestBadgeProps(request.type);
+                                                    return (
+                                                        <Badge variant={variant}
+                                                               className="w-24 justify-center text-center">
+                                                            {label}
+                                                        </Badge>
+                                                    );
+                                                })()}
                                             </TableCell>
-                                            <TableCell className="font-medium">{request.dateRange}</TableCell>
+
+                                            <TableCell
+                                                className="font-medium">{request.fromDate} -{">"} {request.toDate}</TableCell>
                                             <TableCell>
                                                 <div className="max-w-xs truncate" title={request.reason}>
                                                     {request.reason}
@@ -266,7 +262,7 @@ export default function RequestsPage() {
                                             </TableCell>
                                             <TableCell>{getStatusBadge(request.status)}</TableCell>
                                             <TableCell
-                                                className="text-sm text-gray-500">{request.submittedAt}</TableCell>
+                                                className="text-sm text-gray-500">{formatDateToYMD(request.createdAt)}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -283,19 +279,19 @@ export default function RequestsPage() {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="text-center p-4 bg-yellow-50 rounded-lg">
                                     <div className="text-2xl font-bold text-yellow-600">
-                                        {requests.filter((r) => r.status === "pending").length}
+                                        {listRequests.filter((r) => r.status === RequestStatus.PENDING).length}
                                     </div>
                                     <div className="text-sm text-yellow-700">Chờ duyệt</div>
                                 </div>
                                 <div className="text-center p-4 bg-green-50 rounded-lg">
                                     <div className="text-2xl font-bold text-green-600">
-                                        {requests.filter((r) => r.status === "approved").length}
+                                        {listRequests.filter((r) => r.status === RequestStatus.APPROVED).length}
                                     </div>
                                     <div className="text-sm text-green-700">Đã duyệt</div>
                                 </div>
                                 <div className="text-center p-4 bg-red-50 rounded-lg">
                                     <div className="text-2xl font-bold text-red-600">
-                                        {requests.filter((r) => r.status === "rejected").length}
+                                        {listRequests.filter((r) => r.status === RequestStatus.REJECTED).length}
                                     </div>
                                     <div className="text-sm text-red-700">Từ chối</div>
                                 </div>
