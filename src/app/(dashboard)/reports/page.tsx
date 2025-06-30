@@ -1,29 +1,43 @@
 "use client"
 
-import { useState } from "react"
-import { Download, Filter } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { DashboardHeader } from "@/components/dashboard-header"
+import {useEffect, useState} from "react"
+import {Download, Filter} from "lucide-react"
+import {Button} from "@/components/ui/button"
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
+import {Badge} from "@/components/ui/badge"
+import {DashboardHeader} from "@/components/dashboard-header"
+import {getMonthlyReport} from "@/services/report/report.api";
+import {AttendanceReport, AttendanceReportParams} from "@/types/reports.interface";
+import {CheckInStatus, CheckOutStatus} from "@/types/operation.interface";
+import {extractTimeHHMM} from "@/helpers/extractTimeHHMM";
 
 export default function ReportsPage() {
-    const [selectedMonth, setSelectedMonth] = useState("2024-01")
-    const [selectedYear, setSelectedYear] = useState("2024")
-
-    const reportData = [
-        { date: "01/01/2024", checkIn: "08:30", checkOut: "17:30", hours: "8.5", status: "Đúng giờ" },
-        { date: "02/01/2024", checkIn: "08:45", checkOut: "17:45", hours: "8.5", status: "Trễ" },
-        { date: "03/01/2024", checkIn: "08:15", checkOut: "17:15", hours: "8.5", status: "Đúng giờ" },
-        { date: "04/01/2024", checkIn: "08:30", checkOut: "18:00", hours: "9.0", status: "Đúng giờ" },
-        { date: "05/01/2024", checkIn: "08:30", checkOut: "17:30", hours: "8.5", status: "Đúng giờ" },
-    ]
+    const currentMonth = (new Date().getMonth() + 1).toString();
+    const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+    const [selectedYear, setSelectedYear] = useState("2025")
+    const [reportsData, setReportsData] = useState<AttendanceReport[]>([])
+    const fetchData = async (): Promise<void> => {
+        try {
+            const params: AttendanceReportParams = {
+                month: parseInt(selectedMonth),
+                year: parseInt(selectedYear),
+            }
+            const res = await getMonthlyReport(params)
+            setReportsData(res.data)
+            console.log("Fetched report data:", res.data)
+        } catch (error) {
+            console.error("Error fetching report data:", error)
+        }
+    }
+    useEffect(() => {
+        fetchData()
+    }, []);
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <DashboardHeader />
+            <DashboardHeader/>
             <main className="container mx-auto px-4 py-8">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-900">Báo cáo chấm công</h1>
@@ -33,7 +47,7 @@ export default function ReportsPage() {
                 <Card className="mb-8">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <Filter className="h-5 w-5" />
+                            <Filter className="h-5 w-5"/>
                             Bộ lọc báo cáo
                         </CardTitle>
                         <CardDescription>Chọn khoảng thời gian để xem báo cáo</CardDescription>
@@ -44,13 +58,21 @@ export default function ReportsPage() {
                                 <label className="text-sm font-medium">Tháng</label>
                                 <Select value={selectedMonth} onValueChange={setSelectedMonth}>
                                     <SelectTrigger className="w-[180px]">
-                                        <SelectValue placeholder="Chọn tháng" />
+                                        <SelectValue placeholder="Chọn tháng"/>
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="2024-01">Tháng 1, 2024</SelectItem>
-                                        <SelectItem value="2024-02">Tháng 2, 2024</SelectItem>
-                                        <SelectItem value="2024-03">Tháng 3, 2024</SelectItem>
-                                        <SelectItem value="2024-04">Tháng 4, 2024</SelectItem>
+                                        <SelectItem value="1">Tháng 1</SelectItem>
+                                        <SelectItem value="2">Tháng 2</SelectItem>
+                                        <SelectItem value="3">Tháng 3</SelectItem>
+                                        <SelectItem value="4">Tháng 4</SelectItem>
+                                        <SelectItem value="5">Tháng 5</SelectItem>
+                                        <SelectItem value="6">Tháng 6</SelectItem>
+                                        <SelectItem value="7">Tháng 7</SelectItem>
+                                        <SelectItem value="8">Tháng 8</SelectItem>
+                                        <SelectItem value="9">Tháng 9</SelectItem>
+                                        <SelectItem value="10">Tháng 10</SelectItem>
+                                        <SelectItem value="11">Tháng 11</SelectItem>
+                                        <SelectItem value="12">Tháng 12</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -59,20 +81,26 @@ export default function ReportsPage() {
                                 <label className="text-sm font-medium">Năm</label>
                                 <Select value={selectedYear} onValueChange={setSelectedYear}>
                                     <SelectTrigger className="w-[180px]">
-                                        <SelectValue placeholder="Chọn năm" />
+                                        <SelectValue placeholder="Chọn năm"/>
                                     </SelectTrigger>
                                     <SelectContent>
+                                        <SelectItem value="2025">2025</SelectItem>
                                         <SelectItem value="2024">2024</SelectItem>
                                         <SelectItem value="2023">2023</SelectItem>
-                                        <SelectItem value="2022">2022</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
 
-                            <Button className="flex items-center gap-2">
-                                <Download className="h-4 w-4" />
-                                Xuất Excel
-                            </Button>
+                            <div className="flex items-center gap-3 mt-4 sm:mt-0">
+                                <Button variant="outline" onClick={fetchData}>
+                                    Lọc
+                                </Button>
+                                <Button className="flex items-center gap-2">
+                                    <Download className="h-4 w-4"/>
+                                    Xuất Excel
+                                </Button>
+                            </div>
+
                         </div>
                     </CardContent>
                 </Card>
@@ -83,30 +111,39 @@ export default function ReportsPage() {
                         <CardDescription>Báo cáo chi tiết cho tháng {selectedMonth}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Ngày</TableHead>
-                                    <TableHead>Giờ vào</TableHead>
-                                    <TableHead>Giờ ra</TableHead>
-                                    <TableHead>Tổng giờ</TableHead>
-                                    <TableHead>Trạng thái</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {reportData.map((row, index) => (
-                                    <TableRow key={index}>
-                                        <TableCell className="font-medium">{row.date}</TableCell>
-                                        <TableCell>{row.checkIn}</TableCell>
-                                        <TableCell>{row.checkOut}</TableCell>
-                                        <TableCell>{row.hours}h</TableCell>
-                                        <TableCell>
-                                            <Badge variant={row.status === "Đúng giờ" ? "default" : "destructive"}>{row.status}</Badge>
-                                        </TableCell>
+                        {
+                            reportsData.length <= 0 ? <div className="flex items-center gap-2">No Data</div> : (<Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Ngày</TableHead>
+                                        <TableHead>Giờ vào</TableHead>
+                                        <TableHead>Giờ ra</TableHead>
+                                        <TableHead>Tổng giờ</TableHead>
+                                        <TableHead>Trạng thái</TableHead>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                                </TableHeader>
+                                <TableBody>
+                                    {reportsData.map((row, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell className="font-medium">{row.date}</TableCell>
+                                            <TableCell>{extractTimeHHMM(row.checkInTime)}</TableCell>
+                                            <TableCell>{extractTimeHHMM(row.checkOutTime)}</TableCell>
+                                            <TableCell>{row.totalHours.toFixed(1)}h</TableCell>
+                                            <TableCell>
+                                                <Badge
+                                                    variant={row.checkInStatus === CheckInStatus.ONTIME ? "default" : "destructive"}>{row.checkInStatus}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge
+                                                    variant={row.checkOutStatus === CheckOutStatus.ONTIME ? "default" : "destructive"}>{row.checkOutStatus}
+                                                </Badge>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>)
+                        }
                     </CardContent>
                 </Card>
             </main>
