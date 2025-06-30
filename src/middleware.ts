@@ -4,6 +4,7 @@ import {NextResponse} from 'next/server'
 
 export function middleware(request: NextRequest) {
     const token = request.cookies.get('userToken')?.value
+    const role = request.cookies.get('role')?.value
     const {pathname} = request.nextUrl
 
     const publicRoutes = ['/login', '/register']
@@ -15,6 +16,10 @@ export function middleware(request: NextRequest) {
 
     if (token && isPublicRoute) {
         return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+
+    if (token && role === 'EMPLOYEE' && pathname.startsWith('/employee')) {
+        return NextResponse.redirect(new URL('/', request.url))
     }
 
     return NextResponse.next()

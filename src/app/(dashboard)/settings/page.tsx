@@ -1,19 +1,16 @@
 "use client"
 
-import { Bell, Shield, User, Globe } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { DashboardHeader } from "@/components/dashboard-header"
-import { Separator } from "@/components/ui/separator"
+import {Shield, User} from "lucide-react"
+import {Button} from "@/components/ui/button"
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
+import {Label} from "@/components/ui/label"
+import {Input} from "@/components/ui/input"
+import {DashboardHeader} from "@/components/dashboard-header"
 
 export default function SettingsPage() {
     return (
         <div className="min-h-screen bg-gray-50">
-            <DashboardHeader />
+            <DashboardHeader/>
             <main className="container mx-auto px-4 py-8">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-900">Cài đặt</h1>
@@ -24,7 +21,7 @@ export default function SettingsPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <User className="h-5 w-5" />
+                                <User className="h-5 w-5"/>
                                 Thông tin cá nhân
                             </CardTitle>
                             <CardDescription>Cập nhật thông tin hồ sơ của bạn</CardDescription>
@@ -33,26 +30,26 @@ export default function SettingsPage() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="firstName">Họ</Label>
-                                    <Input id="firstName" defaultValue="Nguyễn" />
+                                    <Input id="firstName" defaultValue="Nguyễn"/>
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="lastName">Tên</Label>
-                                    <Input id="lastName" defaultValue="Văn A" />
+                                    <Input id="lastName" defaultValue="Văn A"/>
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="email">Email</Label>
-                                <Input id="email" type="email" defaultValue="nva@company.com" />
+                                <Input id="email" type="email" defaultValue="nva@company.com"/>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="phone">Số điện thoại</Label>
-                                <Input id="phone" defaultValue="+84 123 456 789" />
+                                <Input id="phone" defaultValue="+84 123 456 789"/>
                             </div>
-                            <Button>Cập nhật thông tin</Button>
+                            <Button className={"bg-blue-600 hover:bg-blue-500"}>Cập nhật thông tin</Button>
                         </CardContent>
                     </Card>
 
-                   {/* <Card>
+                    {/* <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Bell className="h-5 w-5" />
@@ -90,7 +87,7 @@ export default function SettingsPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <Shield className="h-5 w-5" />
+                                <Shield className="h-5 w-5"/>
                                 Bảo mật
                             </CardTitle>
                             <CardDescription>Cài đặt bảo mật và xác thực</CardDescription>
@@ -99,11 +96,12 @@ export default function SettingsPage() {
                             <div className="space-y-2">
                                 <Label>Đổi mật khẩu</Label>
                                 <div className="space-y-2">
-                                    <Input type="password" placeholder="Mật khẩu hiện tại" />
-                                    <Input type="password" placeholder="Mật khẩu mới" />
-                                    <Input type="password" placeholder="Xác nhận mật khẩu mới" />
+                                    <Input type="password" placeholder="Mật khẩu hiện tại"/>
+                                    <Input type="password" placeholder="Mật khẩu mới"/>
+                                    <Input type="password" placeholder="Xác nhận mật khẩu mới"/>
                                 </div>
-                                <Button variant="outline">Đổi mật khẩu</Button>
+                                <Button className={"bg-blue-600 hover:bg-blue-500"}>Đổi mật
+                                    khẩu</Button>
                             </div>
                             {/*<Separator />
                             <div className="flex items-center justify-between">

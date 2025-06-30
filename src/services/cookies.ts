@@ -18,6 +18,10 @@ export async function getUserId() {
     return (await cookies()).get("userId")?.value;
 }
 
+export async function getUserRole() {
+    return (await cookies()).get("role")?.value;
+}
+
 export async function returnUser() {
     return {
         token: (await cookies()).get("userToken")?.value,
