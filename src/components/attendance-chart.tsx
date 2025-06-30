@@ -1,6 +1,6 @@
 "use client"
 
-import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
+import {Bar, BarChart, Tooltip, XAxis, YAxis} from "recharts"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {ChartContainer} from "@/components/ui/chart"
 import {getOperationHistory} from "@/services/operation/operation.api";
@@ -13,15 +13,6 @@ export interface WorkHourChartData {
     hours: number
 }
 
-const data = [
-    {day: "T2", hours: 8.5},
-    {day: "T3", hours: 8.0},
-    {day: "T4", hours: 9.0},
-    {day: "T5", hours: 8.5},
-    {day: "T6", hours: 7.5},
-    {day: "T7", hours: 4.0},
-    {day: "CN", hours: 0},
-]
 
 export function AttendanceChart() {
     const [chartData, setChartData] = useState<WorkHourChartData[]>([
@@ -67,17 +58,15 @@ export function AttendanceChart() {
                     }}
                     className="h-[200px]"
                 >
-                    <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={chartData}>
-                            <XAxis dataKey="day"/>
-                            <YAxis/>
-                            <Tooltip
-                                formatter={(value) => [`${value}h`, "Giờ làm việc"]}
-                                labelFormatter={(label) => `Thứ ${label}`}
-                            />
-                            <Bar dataKey="hours" fill="#2563eb" radius={[4, 4, 0, 0]}/>
-                        </BarChart>
-                    </ResponsiveContainer>
+                    <BarChart data={chartData}>
+                        <XAxis dataKey="day"/>
+                        <YAxis/>
+                        <Tooltip
+                            formatter={(value) => [`${value}h`, "Giờ làm việc"]}
+                            labelFormatter={(label) => `Thứ ${label}`}
+                        />
+                        <Bar dataKey="hours" fill="#2563eb" radius={[4, 4, 0, 0]}/>
+                    </BarChart>
                 </ChartContainer>
             </CardContent>
         </Card>
