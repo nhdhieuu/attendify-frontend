@@ -4,7 +4,7 @@ import {AuthResponse} from "@/types/auth.interface";
 
 export async function setUserData(data: AuthResponse) {
     (await cookies()).set("userToken", data.token);
-    (await cookies()).set("userId", data.user.id.toString());
+    (await cookies()).set("userId", data.user.id);
     (await cookies()).set("fullname", data.user.fullname);
     (await cookies()).set("avatar", data.user.avatar ? data.user.avatar : "");
     (await cookies()).set("role", data.user.role);
@@ -12,6 +12,10 @@ export async function setUserData(data: AuthResponse) {
 
 export async function getUserToken() {
     return (await cookies()).get("userToken")?.value;
+}
+
+export async function getUserId() {
+    return (await cookies()).get("userId")?.value;
 }
 
 export async function returnUser() {

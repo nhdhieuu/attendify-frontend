@@ -22,9 +22,9 @@ import {DatePickerWithRange} from "@/components/date-range-picker"
 import type {DateRange} from "react-day-picker"
 import {ListRequestParams, RequestBody, RequestResponse, RequestStatus, RequestType} from "@/types/request.interface";
 import {createRequestApi, getListRequests} from "@/services/request/request.api";
-import {useAuthStore} from "@/stores/useAuthStore";
 import {formatDateToYMD} from "@/helpers/extractTimeHHMM";
 import LoadingComponent from "@/components/loading"
+import {getUserId} from "@/services/cookies"
 
 const requestTypeSelect = [
     {label: "Đi trễ", value: RequestType.LATE_ARRIVAL},
@@ -54,15 +54,15 @@ export default function RequestsPage() {
     const [requestType, setRequestType] = useState("")
     const [reason, setReason] = useState("")
     const [listRequests, setListRequests] = useState<RequestResponse[]>([])
-    const user = useAuthStore((state) => state.user)
     const [loading, setLoading] = useState(true)
     const fetchData = async () => {
         try {
+            const userId = await getUserId()
             const params: ListRequestParams = {
                 page: 1,
                 limit: 100,
                 status: null,
-                userId: user?.id || null
+                userId: userId || ""
             }
             const res = await getListRequests(params)
             console.log(res.data.data)
