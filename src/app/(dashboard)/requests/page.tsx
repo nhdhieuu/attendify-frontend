@@ -24,7 +24,7 @@ import {ListRequestParams, RequestBody, RequestResponse, RequestStatus, RequestT
 import {createRequestApi, getListRequests} from "@/services/request/request.api";
 import {formatDateToYMD} from "@/helpers/extractTimeHHMM";
 import LoadingComponent from "@/components/loading"
-import {getUserId} from "@/services/cookies"
+import {getUserId, getUserRole} from "@/services/cookies"
 
 const requestTypeSelect = [
     {label: "Đi trễ", value: RequestType.LATE_ARRIVAL},
@@ -58,11 +58,12 @@ export default function RequestsPage() {
     const fetchData = async () => {
         try {
             const userId = await getUserId()
+            const role = await getUserRole()
             const params: ListRequestParams = {
                 page: 1,
                 limit: 100,
                 status: null,
-                userId: userId || ""
+                userId: role == "ADMIN" ? null : userId || ""
             }
             const res = await getListRequests(params)
             setListRequests(res.data.data)
@@ -75,7 +76,7 @@ export default function RequestsPage() {
         fetchData()
     }, [])
 
-    const handleSubmitRequest = () => {
+    const handleSubmitRequest = async () => {
         if (!dateRange || !requestType || !reason.trim()) {
             alert("Vui lòng điền đầy đủ thông tin");
             return;
@@ -114,7 +115,7 @@ export default function RequestsPage() {
             setRequestType("");
             setReason("");
             setIsDialogOpen(false);
-            alert("Yêu cầu đã được gửi thành công!");
+            await fetchData()
         } catch (error) {
             console.log(error)
         }

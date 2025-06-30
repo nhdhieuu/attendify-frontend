@@ -1,13 +1,14 @@
 "use client"
 
-import {Shield, User} from "lucide-react"
-import {Button} from "@/components/ui/button"
+import {User} from "lucide-react"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {Label} from "@/components/ui/label"
 import {Input} from "@/components/ui/input"
 import {DashboardHeader} from "@/components/dashboard-header"
+import {useAuthStore} from "@/stores/useAuthStore"
 
 export default function SettingsPage() {
+    const user = useAuthStore((state) => state.user)
     return (
         <div className="min-h-screen bg-gray-50">
             <DashboardHeader/>
@@ -29,23 +30,31 @@ export default function SettingsPage() {
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="firstName">Họ</Label>
-                                    <Input id="firstName" defaultValue="Nguyễn"/>
+                                    <Label htmlFor="fullname">Họ và tên</Label>
+                                    <Input disabled id="fullname" defaultValue={user?.fullname}/>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="lastName">Tên</Label>
-                                    <Input id="lastName" defaultValue="Văn A"/>
+                                    <Label htmlFor="department">Phòng ban</Label>
+                                    <Input disabled id="department" defaultValue={user?.department}/>
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input id="email" type="email" defaultValue="nva@company.com"/>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="email">Email</Label>
+                                    <Input disabled id="email" type="email" defaultValue={user?.email}/>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="phone">Số điện thoại</Label>
+                                    <Input disabled id="phone" defaultValue={user?.phone}/>
+                                </div>
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="phone">Số điện thoại</Label>
-                                <Input id="phone" defaultValue="+84 123 456 789"/>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="dob">Ngày sinh</Label>
+                                    <Input disabled id="dob" defaultValue={user?.dob}/>
+                                </div>
                             </div>
-                            <Button className={"bg-blue-600 hover:bg-blue-500"}>Cập nhật thông tin</Button>
+                            {/*<Button className={"bg-blue-600 hover:bg-blue-500"}>Cập nhật thông tin</Button>*/}
                         </CardContent>
                     </Card>
 
@@ -84,7 +93,7 @@ export default function SettingsPage() {
                         </CardContent>
                     </Card>*/}
 
-                    <Card>
+                    {/*<Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Shield className="h-5 w-5"/>
@@ -103,16 +112,16 @@ export default function SettingsPage() {
                                 <Button className={"bg-blue-600 hover:bg-blue-500"}>Đổi mật
                                     khẩu</Button>
                             </div>
-                            {/*<Separator />
+                            <Separator />
                             <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
                                     <Label>Xác thực 2 bước</Label>
                                     <p className="text-sm text-gray-500">Tăng cường bảo mật tài khoản</p>
                                 </div>
                                 <Switch />
-                            </div>*/}
+                            </div>
                         </CardContent>
-                    </Card>
+                    </Card>*/}
 
                     {/*<Card>
                         <CardHeader>

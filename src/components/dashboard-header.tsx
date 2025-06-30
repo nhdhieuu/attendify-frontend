@@ -34,6 +34,7 @@ export function DashboardHeader() {
             console.error("Lỗi khi đăng xuất:", error)
         }
     }
+
     return (
         <header className="bg-white border-b border-gray-200 shadow-sm">
             <div className="container mx-auto px-4 py-4">
@@ -66,11 +67,11 @@ export function DashboardHeader() {
                                     </div>
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator/>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => router.push('/settings')}>
                                     <User className="mr-2 h-4 w-4"/>
                                     <span>Hồ sơ</span>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => router.push('/settings')}>
                                     <Settings className="mr-2 h-4 w-4"/>
                                     <span>Cài đặt</span>
                                 </DropdownMenuItem>

@@ -19,10 +19,43 @@ import {
 } from "@/components/ui/dialog"
 import {Label} from "@/components/ui/label"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
+import {useForm} from "react-hook-form";
+import {CreatUser} from "@/types/user.interface"
+import {createNewUser} from "@/services/user/user.api"
 
 export default function EmployeesPage() {
     const [searchTerm, setSearchTerm] = useState("")
+    const [isDialogOpen, setIsDialogOpen] = useState(false)
 
+
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        watch,
+        reset,
+        formState: {errors},
+    } = useForm<CreatUser>({
+        defaultValues: {
+            password: "123456",
+            email: "",
+            fullname: "",
+            phone: "",
+            dob: "",
+            department: "",
+        },
+    })
+    const onSubmit = async (data: CreatUser) => {
+        try {
+            const res = await createNewUser(data)
+            console.log("User created successfully:", res)
+            reset() // Reset form
+            setIsDialogOpen(false) // Đóng dialog khi thành công
+        } catch (error) {
+            console.error("Error creating user:", error)
+        }
+    }
+    const watchedDepartment = watch("department")
     const employees = [
         {
             id: 1,
@@ -79,7 +112,7 @@ export default function EmployeesPage() {
                         <p className="text-gray-600 mt-2">Quản lý thông tin và quyền truy cập của nhân viên</p>
                     </div>
 
-                    <Dialog>
+                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
                             <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500">
                                 <Plus className="h-4 w-4"/>
@@ -91,46 +124,80 @@ export default function EmployeesPage() {
                                 <DialogTitle>Thêm nhân viên mới</DialogTitle>
                                 <DialogDescription>Nhập thông tin nhân viên mới vào hệ thống</DialogDescription>
                             </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="name" className="text-right">
-                                        Họ tên
-                                    </Label>
-                                    <Input id="name" className="col-span-3"/>
+                            <form onSubmit={handleSubmit(onSubmit)}>
+
+                                <div className="grid gap-4 py-4">
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="name" className="text-right">
+                                            Họ tên
+                                        </Label>
+                                        <Input id="name"
+                                               className="col-span-3"
+                                               {...register("fullname", {required: "Họ tên là bắt buộc"})}
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="email" className="text-right">
+                                            Email
+                                        </Label>
+                                        <Input id="email" type="email" className="col-span-3"
+                                               {...register("email", {
+                                                   required: "Email là bắt buộc",
+                                                   pattern: {
+                                                       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                                       message: "Email không hợp lệ",
+                                                   },
+                                               })}
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="phone">
+                                            Số điện thoại
+                                        </Label>
+                                        <Input
+                                            id="phone"
+                                            className="col-span-3"
+                                            {...register("phone", {required: "Số điện thoại là bắt buộc"})}
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="dob" className="text-right">
+                                            Ngày sinh
+                                        </Label>
+                                        <Input
+                                            id="dob"
+                                            type="date"
+                                            className="col-span-3 w-full"
+                                            {...register("dob", {required: "Ngày sinh là bắt buộc"})}
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="department" className="text-right">
+                                            Phòng ban
+                                        </Label>
+                                        <Select value={watchedDepartment}
+                                                onValueChange={(value) => setValue("department", value)}>
+                                            <SelectTrigger
+                                                className="col-span-3 w-full">
+                                                <SelectValue placeholder="Chọn phòng ban"/>
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="it">IT</SelectItem>
+                                                <SelectItem value="hr">Nhân sự</SelectItem>
+                                                <SelectItem value="finance">Kinh doanh</SelectItem>
+                                                <SelectItem value="marketing">Marketing</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="text-sm text-gray-500 italic">Password mặc định là 123456</div>
+
                                 </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="email" className="text-right">
-                                        Email
-                                    </Label>
-                                    <Input id="email" type="email" className="col-span-3"/>
+                                <div className="flex justify-end gap-2">
+                                    <Button type="button" variant="outline"
+                                            onClick={() => setIsDialogOpen(false)}>Hủy</Button>
+                                    <Button className={"bg-blue-600 hover:bg-blue-500"}>Thêm nhân viên</Button>
                                 </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="department" className="text-right">
-                                        Phòng ban
-                                    </Label>
-                                    <Select>
-                                        <SelectTrigger className="col-span-3">
-                                            <SelectValue placeholder="Chọn phòng ban"/>
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="it">IT</SelectItem>
-                                            <SelectItem value="hr">HR</SelectItem>
-                                            <SelectItem value="finance">Finance</SelectItem>
-                                            <SelectItem value="marketing">Marketing</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="position" className="text-right">
-                                        Chức vụ
-                                    </Label>
-                                    <Input id="position" className="col-span-3"/>
-                                </div>
-                            </div>
-                            <div className="flex justify-end gap-2">
-                                <Button variant="outline">Hủy</Button>
-                                <Button className={"bg-blue-600 hover:bg-blue-500"}>Thêm nhân viên</Button>
-                            </div>
+                            </form>
                         </DialogContent>
                     </Dialog>
                 </div>
