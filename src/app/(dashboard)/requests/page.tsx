@@ -1,10 +1,9 @@
 "use client"
 
 import {useState} from "react"
-import {CheckCircle, Clock, FileCheck, Plus, Search, XCircle} from "lucide-react"
+import {CheckCircle, Clock, FileCheck, Plus, XCircle} from "lucide-react"
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
-import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Textarea} from "@/components/ui/textarea"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
@@ -21,6 +20,14 @@ import {
 } from "@/components/ui/dialog"
 import {DatePickerWithRange} from "@/components/date-range-picker"
 import type {DateRange} from "react-day-picker"
+import {RequestBody, RequestType} from "@/types/request.interface";
+import {createRequestApi} from "@/services/request/request.api";
+
+const requestTypeSelect = [
+    {label: "Đi trễ", value: RequestType.LATE_ARRIVAL},
+    {label: "Làm online", value: RequestType.REMOTE},
+    {label: "Về sớm", value: RequestType.EARLY_LEAVE}
+]
 
 export default function RequestsPage() {
     const [searchTerm, setSearchTerm] = useState("")
@@ -64,32 +71,60 @@ export default function RequestsPage() {
         },
     ]
 
-    const filteredRequests = requests.filter(
-        (request) =>
-            request.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            request.reason.toLowerCase().includes(searchTerm.toLowerCase()),
-    )
+    /* const filteredRequests = requests.filter(
+         (request) =>
+             request.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+             request.reason.toLowerCase().includes(searchTerm.toLowerCase()),
+     )*/
 
     const handleSubmitRequest = () => {
         if (!dateRange || !requestType || !reason.trim()) {
-            alert("Vui lòng điền đầy đủ thông tin")
-            return
+            alert("Vui lòng điền đầy đủ thông tin");
+            return;
         }
 
-        // Here you would typically send the request to your backend
-        console.log({
-            dateRange,
-            requestType,
-            reason,
-        })
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // loại bỏ giờ để so sánh chính xác theo ngày
 
-        // Reset form and close dialog
-        setDateRange(undefined)
-        setRequestType("")
-        setReason("")
-        setIsDialogOpen(false)
-        alert("Yêu cầu đã được gửi thành công!")
-    }
+        const from = new Date(dateRange.from ?? new Date());
+        const to = new Date(dateRange.to ?? new Date());
+        from.setHours(0, 0, 0, 0);
+        to.setHours(0, 0, 0, 0);
+
+        if (from < today || to < today) {
+            alert("Ngày bắt đầu và kết thúc không được nhỏ hơn ngày hiện tại");
+            return;
+        }
+
+        const formatDate = (date: Date) => {
+            const yyyy = date.getFullYear();
+            const mm = String(date.getMonth() + 1).padStart(2, "0");
+            const dd = String(date.getDate()).padStart(2, "0");
+            return `${yyyy}-${mm}-${dd}`;
+        };
+
+        const requestBody: RequestBody = {
+            type: requestType as RequestType,
+            fromDate: formatDate(from),
+            toDate: formatDate(to),
+            reason: reason.trim(),
+        };
+
+        console.log(requestBody);
+        try {
+            const res = createRequestApi(requestBody)
+            console.log(res)
+            setDateRange(undefined);
+            setRequestType("");
+            setReason("");
+            setIsDialogOpen(false);
+            alert("Yêu cầu đã được gửi thành công!");
+        } catch (error) {
+            console.log(error)
+        }
+
+    };
+
 
     const getStatusBadge = (status: string) => {
         switch (status) {
@@ -131,7 +166,7 @@ export default function RequestsPage() {
 
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button className="flex items-center gap-2">
+                            <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 ">
                                 <Plus className="h-4 w-4"/>
                                 Tạo yêu cầu
                             </Button>
@@ -154,9 +189,11 @@ export default function RequestsPage() {
                                             <SelectValue placeholder="Chọn loại yêu cầu"/>
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="di-tre">Đi trễ</SelectItem>
-                                            <SelectItem value="lam-online">Làm online</SelectItem>
-                                            <SelectItem value="ve-som">Về sớm</SelectItem>
+                                            {requestTypeSelect.map((item) => (
+                                                <SelectItem key={item.value} value={item.value}>
+                                                    {item.label}
+                                                </SelectItem>
+                                            ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -175,7 +212,8 @@ export default function RequestsPage() {
                                 <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                                     Hủy
                                 </Button>
-                                <Button onClick={handleSubmitRequest}>Gửi yêu cầu</Button>
+                                <Button className={"bg-blue-600 hover:bg-blue-500"} onClick={handleSubmitRequest}>Gửi
+                                    yêu cầu</Button>
                             </div>
                         </DialogContent>
                     </Dialog>
@@ -191,7 +229,7 @@ export default function RequestsPage() {
                             <CardDescription>Tổng cộng {requests.length} yêu cầu đã tạo</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="mb-6">
+                            {/*<div className="mb-6">
                                 <div className="relative">
                                     <Search
                                         className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"/>
@@ -202,7 +240,7 @@ export default function RequestsPage() {
                                         className="pl-10"
                                     />
                                 </div>
-                            </div>
+                            </div>*/}
 
                             <Table>
                                 <TableHeader>
