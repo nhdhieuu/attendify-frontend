@@ -26,3 +26,17 @@ export interface CreatUser {
 }
 
 export type CreateUserResponse = AuthResponse;
+
+export interface ListUsersParams {
+    page: number,
+    limit: number,
+}
+
+export interface ListUsers {
+    data: User[]
+    "page": number,
+    "limit": number,
+    "totalElements": number,
+    "totalPages": number,
+    "lastPage": boolean,
+}

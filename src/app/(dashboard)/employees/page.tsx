@@ -1,13 +1,12 @@
 "use client"
 
-import {useState} from "react"
+import {useEffect, useState} from "react"
 import {Edit, Plus, Search, Trash2, Users} from "lucide-react"
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {Input} from "@/components/ui/input"
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
-import {Badge} from "@/components/ui/badge"
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
+import {Avatar, AvatarFallback} from "@/components/ui/avatar"
 import {DashboardHeader} from "@/components/dashboard-header"
 import {
     Dialog,
@@ -20,14 +19,23 @@ import {
 import {Label} from "@/components/ui/label"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {useForm} from "react-hook-form";
-import {CreatUser} from "@/types/user.interface"
-import {createNewUser} from "@/services/user/user.api"
+import {CreatUser, ListUsersParams, User} from "@/types/user.interface"
+import {createNewUser, getListUsers} from "@/services/user/user.api"
+import {Badge} from "@/components/ui/badge";
+import LoadingComponent from "@/components/loading";
+
+const departmentMap: Record<string, string> = {
+    it: "IT",
+    hr: "Nhân sự ",
+    finance: "Kinh doanh",
+    marketing: "Marketing",
+};
 
 export default function EmployeesPage() {
     const [searchTerm, setSearchTerm] = useState("")
     const [isDialogOpen, setIsDialogOpen] = useState(false)
-
-
+    const [employees, setEmployees] = useState<User[]>([])
+    const [loading, setLoading] = useState(false)
     const {
         register,
         handleSubmit,
@@ -48,60 +56,34 @@ export default function EmployeesPage() {
     const onSubmit = async (data: CreatUser) => {
         try {
             const res = await createNewUser(data)
-            console.log("User created successfully:", res)
             reset() // Reset form
             setIsDialogOpen(false) // Đóng dialog khi thành công
+            await fetchData()
         } catch (error) {
             console.error("Error creating user:", error)
         }
     }
     const watchedDepartment = watch("department")
-    const employees = [
-        {
-            id: 1,
-            name: "Nguyễn Văn A",
-            email: "nva@company.com",
-            department: "IT",
-            position: "Developer",
-            status: "active",
-            avatar: "/placeholder.svg?height=40&width=40",
-        },
-        {
-            id: 2,
-            name: "Trần Thị B",
-            email: "ttb@company.com",
-            department: "HR",
-            position: "HR Manager",
-            status: "active",
-            avatar: "/placeholder.svg?height=40&width=40",
-        },
-        {
-            id: 3,
-            name: "Lê Văn C",
-            email: "lvc@company.com",
-            department: "Finance",
-            position: "Accountant",
-            status: "inactive",
-            avatar: "/placeholder.svg?height=40&width=40",
-        },
-        {
-            id: 4,
-            name: "Phạm Thị D",
-            email: "ptd@company.com",
-            department: "Marketing",
-            position: "Marketing Specialist",
-            status: "active",
-            avatar: "/placeholder.svg?height=40&width=40",
-        },
-    ]
 
-    const filteredEmployees = employees.filter(
-        (employee) =>
-            employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            employee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            employee.department.toLowerCase().includes(searchTerm.toLowerCase()),
-    )
+    const fetchData = async () => {
+        try {
+            setLoading(true)
+            const params: ListUsersParams = {
+                page: 1,
+                limit: 20
+            }
+            const res = await getListUsers(params)
+            setEmployees(res.data.data)
+            setLoading(false)
 
+        } catch (error) {
+            console.error("Error fetching employees:", error)
+        }
+    }
+    useEffect(() => {
+        fetchData()
+    }, [])
+    if (loading) return <LoadingComponent/>
     return (
         <div className="min-h-screen bg-gray-50">
             <DashboardHeader/>
@@ -228,33 +210,35 @@ export default function EmployeesPage() {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Nhân viên</TableHead>
+                                    <TableHead>Ngày sinh</TableHead>
                                     <TableHead>Phòng ban</TableHead>
-                                    <TableHead>Trạng thái</TableHead>
+                                    <TableHead>Admin</TableHead>
                                     <TableHead>Thao tác</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {filteredEmployees.map((employee) => (
+                                {employees.map((employee) => (
                                     <TableRow key={employee.id}>
                                         <TableCell>
                                             <div className="flex items-center space-x-3">
                                                 <Avatar className="h-8 w-8">
-                                                    <AvatarImage src={employee.avatar || "/placeholder.svg"}
-                                                                 alt={employee.name}/>
-                                                    <AvatarFallback>{employee.name.charAt(0)}</AvatarFallback>
+                                                    <AvatarFallback>{employee.fullname.charAt(0)}</AvatarFallback>
                                                 </Avatar>
                                                 <div>
-                                                    <div className="font-medium">{employee.name}</div>
+                                                    <div className="font-medium">{employee.fullname}</div>
                                                     <div className="text-sm text-gray-500">{employee.email}</div>
                                                 </div>
                                             </div>
                                         </TableCell>
-                                        <TableCell>{employee.department}</TableCell>
+                                        <TableCell>{employee.dob}</TableCell>
                                         <TableCell>
-                                            <Badge variant={employee.status === "active" ? "default" : "secondary"}>
-                                                {employee.status === "active" ? "Hoạt động" : "Không hoạt động"}
-                                            </Badge>
-                                        </TableCell>
+                                            {departmentMap[employee.department] || employee.department}
+                                        </TableCell> <TableCell>
+                                        {employee.role === "ADMIN" && (
+                                            <Badge className="bg-blue-400 text-white">Admin</Badge>
+                                        )}
+                                    </TableCell>
+
                                         <TableCell>
                                             <div className="flex items-center space-x-2">
                                                 <Button variant="ghost" size="sm">
