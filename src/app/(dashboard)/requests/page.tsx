@@ -65,7 +65,6 @@ export default function RequestsPage() {
                 userId: userId || ""
             }
             const res = await getListRequests(params)
-            console.log(res.data.data)
             setListRequests(res.data.data)
             setLoading(false)
         } catch (error) {
@@ -109,10 +108,8 @@ export default function RequestsPage() {
             reason: reason.trim(),
         };
 
-        console.log(requestBody);
         try {
             const res = createRequestApi(requestBody)
-            console.log(res)
             setDateRange(undefined);
             setRequestType("");
             setReason("");

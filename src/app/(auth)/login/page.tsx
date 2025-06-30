@@ -75,7 +75,6 @@ export default function LoginPage() {
 
         try {
             const loginRequestBody = (({rememberMe, ...rest}) => rest)(formData) as AuthRequestBody;
-            console.log(loginRequestBody)
             const res = await loginApi(loginRequestBody)
             loginStore(res.data)
             await setUserData(res.data)

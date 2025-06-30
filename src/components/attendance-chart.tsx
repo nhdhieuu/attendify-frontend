@@ -41,9 +41,7 @@ export function AttendanceChart() {
                 limit: 7,
             }
             const res = await getOperationHistory(params)
-            console.log("Fetched work hours data:", res.data.data)
             const convertedData = convertToChartData(res.data.data)
-            console.log("Converted chart data:", convertedData)
             setChartData(convertedData)
         } catch (error) {
             console.error("Error fetching work hours data:", error)

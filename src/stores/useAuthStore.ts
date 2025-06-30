@@ -23,7 +23,6 @@ export const useAuthStore = create<AuthState>()(
 
             login: (authData: AuthResponse) => {
                 // Lưu token vào localStorage
-                console.log('Login successful, saving token:', authData)
                 localStorage.setItem('token', authData.token)
 
                 set({
