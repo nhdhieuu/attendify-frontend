@@ -1,11 +1,13 @@
 "use client"
 
-import {User} from "lucide-react"
+import {Shield, User} from "lucide-react"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {Label} from "@/components/ui/label"
 import {Input} from "@/components/ui/input"
 import {DashboardHeader} from "@/components/dashboard-header"
 import {useAuthStore} from "@/stores/useAuthStore"
+import {Button} from "@/components/ui/button";
+import {Separator} from "@/components/ui/separator";
 
 export default function SettingsPage() {
     const user = useAuthStore((state) => state.user)
@@ -93,7 +95,7 @@ export default function SettingsPage() {
                         </CardContent>
                     </Card>*/}
 
-                    {/*<Card>
+                    <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Shield className="h-5 w-5"/>
@@ -112,16 +114,9 @@ export default function SettingsPage() {
                                 <Button className={"bg-blue-600 hover:bg-blue-500"}>Đổi mật
                                     khẩu</Button>
                             </div>
-                            <Separator />
-                            <div className="flex items-center justify-between">
-                                <div className="space-y-0.5">
-                                    <Label>Xác thực 2 bước</Label>
-                                    <p className="text-sm text-gray-500">Tăng cường bảo mật tài khoản</p>
-                                </div>
-                                <Switch />
-                            </div>
+                            <Separator/>
                         </CardContent>
-                    </Card>*/}
+                    </Card>
 
                     {/*<Card>
                         <CardHeader>
