@@ -11,14 +11,6 @@ export default function DashboardPage() {
             <ToastContainer/>
             <DashboardHeader/>
             <main className="container mx-auto px-4 py-8">
-                {/*<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    <div className="lg:col-span-2">
-                        <TimeTracker/>
-                    </div>
-                    <div>
-                        <QuickStats/>
-                    </div>
-                </div>*/}
                 <TimeTracker/>
                 <div className="mt-8 grid gap-6 md:grid-cols-2">
                     <Suspense fallback={<div>Loading chart...</div>}>

@@ -15,6 +15,7 @@ import {loginApi} from "@/services/auth/login.api";
 import {AuthRequestBody} from "@/types/auth.interface";
 import {useRouter} from "next/navigation";
 import {setUserData} from "@/services/cookies";
+import {signIn, useSession} from "next-auth/react"
 
 export default function LoginPage() {
     const router = useRouter()
@@ -26,8 +27,8 @@ export default function LoginPage() {
         password: "",
         rememberMe: false,
     })
+    const {data: session} = useSession()
     const loginStore = useAuthStore(state => state.login)
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target
         setFormData((prev) => ({
@@ -86,13 +87,21 @@ export default function LoginPage() {
         }
     }
 
-    const handleOAuthLogin = (provider: string) => {
+    const handleOAuthLogin = async () => {
         setIsLoading(true)
-        // Simulate OAuth redirect
-        setTimeout(() => {
-            alert(`Đang chuyển hướng đến ${provider}...`)
-            setIsLoading(false)
-        }, 1000)
+
+        const result = signIn('google', {
+            callbackUrl: 'http://localhost:3000/isSignedIn'
+        }).then(
+            (result) => {
+                console.log("OAuth result:", result)
+                router.push('/register')
+
+            }
+        ).catch(() => {
+            router.push('/register')
+        })
+
     }
 
     return (
@@ -119,7 +128,7 @@ export default function LoginPage() {
                             <Button
                                 variant="outline"
                                 className="w-full bg-transparent"
-                                onClick={() => handleOAuthLogin("Google")}
+                                onClick={() => handleOAuthLogin()}
                                 disabled={isLoading}
                             >
                                 <Chrome className="mr-2 h-4 w-4"/>

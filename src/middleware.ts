@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
     const role = request.cookies.get('role')?.value
     const {pathname} = request.nextUrl
 
-    const publicRoutes = ['/login', '/register']
+    const publicRoutes = ['/login', '/register', "/isSignedIn"]
     const isPublicRoute = publicRoutes.includes(pathname)
 
     if (!token && !isPublicRoute) {

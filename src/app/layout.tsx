@@ -3,6 +3,8 @@ import type {Metadata} from "next"
 import {Inter} from "next/font/google"
 import "./globals.css"
 import {ToastContainer} from "react-toastify";
+import DashboardLayout from "@/components/layout";
+import NextAuthProvider from "@/components/nextAuthProvider";
 
 const inter = Inter({subsets: ["latin"]})
 
@@ -16,12 +18,17 @@ export default function RootLayout({
                                    }: {
     children: React.ReactNode
 }) {
+
     return (
 
         <html lang="vi">
         <body className={inter.className}>
         <ToastContainer/>
-        {children}
+        <DashboardLayout>
+            <NextAuthProvider>
+                {children}
+            </NextAuthProvider>
+        </DashboardLayout>
         </body>
         </html>
     )
