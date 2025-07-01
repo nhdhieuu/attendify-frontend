@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Attendify - Attendance Management System
 
-## Getting Started
+## Introduction
 
-First, run the development server:
+Attendify is a modern web application designed to efficiently manage attendance tracking. Built with Next.js and React,
+the system provides a user-friendly interface with comprehensive features for monitoring student/employee participation.
 
-```bash
+## Key Features
+
+- **User Authentication**: Secure login/registration
+- **Intuitive Dashboard**: Overview of attendance data
+- **Attendance Management**: Create, edit, and track attendance information
+- **Statistical Reports**: Data analysis with visual charts (Recharts)
+- **User-Friendly Interface**: Modern design with Tailwind CSS and Radix UI
+- **Multi-Device Experience**: Compatible across various screen sizes
+
+## Technologies Used
+
+- **Frontend**: Next.js 15.3.4, React 19.0.0
+- **State Management**: Zustand
+- **UI Components**:
+    - Radix UI (Checkbox, Dropdown, Dialog, etc.)
+    - Tailwind CSS
+    - Lucide React (Icons)
+
+- **Forms & Validation**: React Hook Form
+- **HTTP Client**: Axios
+- **Dates & Time**: date-fns
+- **Data Tables**: TanStack Table
+- **Charts**: Recharts
+- **Notifications**: React Toastify
+
+## Installation
+
+``` bash
+# Clone repository
+git clone https://github.com/your-username/attendify-frontend.git
+
+# Navigate to project directory
+cd attendify-frontend
+
+# Install dependencies
+npm install
+
+# Start development environment
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project Structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+``` 
+attendify-frontend/
+├── public/                 # Static resources
+├── src/                    # Source code
+│   ├── app/                # Next.js app router
+│   │   ├── (auth)/         # Authentication related routes
+│   │   └── (dashboard)/    # Dashboard routes
+│   ├── components/         # React components
+│   ├── lib/                # Libraries and utilities
+│   ├── stores/             # State management (Zustand)
+│   ├── services/           # API services
+│   ├── types/              # TypeScript type definitions
+│   ├── helpers/            # Helper functions
+│   ├── middleware.ts       # Next.js middleware
+│   └── axiosInstance.ts    # Axios configuration
+├── .eslintrc.js            # ESLint configuration
+├── next.config.ts          # Next.js configuration
+├── package.json            # Dependencies and scripts
+├── tailwind.config.js      # Tailwind CSS configuration
+└── tsconfig.json           # TypeScript configuration
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scripts
 
-## Learn More
+- `npm run dev` - Start development environment with Turbopack
+- `npm run build` - Build the application for production
+- `npm run start` - Run the built application
+- `npm run lint` - Check for errors with ESLint
 
-To learn more about Next.js, take a look at the following resources:
+## System Requirements
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Node.js 18.x or higher
+- npm 9.x or higher
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Contributing
 
-## Deploy on Vercel
+We welcome all contributions! Please read the [contribution guidelines](CONTRIBUTING.md) for more details.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the [MIT License](LICENSE).
+Developed by [nhdhieuu](https://github.com/nhdhieuu) © 2025
