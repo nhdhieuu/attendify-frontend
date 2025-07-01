@@ -8,12 +8,13 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
 import {Badge} from "@/components/ui/badge"
 import {DashboardHeader} from "@/components/dashboard-header"
-import {getMonthlyReport} from "@/services/report/report.api";
-import {AttendanceReport, AttendanceReportParams} from "@/types/reports.interface";
+import {getAnnualReport, getMonthlyReport} from "@/services/report/report.api";
+import {AnnualReport, AttendanceReport, AttendanceReportParams} from "@/types/reports.interface";
 import {CheckInStatus, CheckOutStatus} from "@/types/operation.interface";
 import {extractTimeHHMM} from "@/helpers/extractTimeHHMM";
 import LoadingComponent from "@/components/loading";
 import * as XLSX from 'xlsx';
+import {AnnualReportButton} from "@/components/annualReportButton";
 
 export default function ReportsPage() {
     const currentMonth = (new Date().getMonth() + 1).toString();
@@ -21,6 +22,7 @@ export default function ReportsPage() {
     const [selectedYear, setSelectedYear] = useState("2025")
     const [loading, setLoading] = useState(false)
     const [reportsData, setReportsData] = useState<AttendanceReport[]>([])
+    const [annualReports, setAnnualReports] = useState<AnnualReport[]>([])
 
     const fetchData = async (): Promise<void> => {
         try {
@@ -30,6 +32,8 @@ export default function ReportsPage() {
                 year: parseInt(selectedYear),
             }
             const res = await getMonthlyReport(params)
+            const annualRes = await getAnnualReport({year: new Date().getFullYear()})
+            setAnnualReports(annualRes.data)
             setReportsData(res.data)
             console.log("Report Data:", res.data)
             setLoading(false)
@@ -194,6 +198,7 @@ export default function ReportsPage() {
                                     <Download className="h-4 w-4"/>
                                     Xuất Excel
                                 </Button>
+                                <AnnualReportButton data={annualReports}/>
                             </div>
 
                         </div>
