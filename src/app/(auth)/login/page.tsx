@@ -16,6 +16,7 @@ import {AuthRequestBody} from "@/types/auth.interface";
 import {useRouter} from "next/navigation";
 import {setUserData} from "@/services/cookies";
 import {signIn, useSession} from "next-auth/react"
+import {toast} from "react-toastify";
 
 export default function LoginPage() {
     const router = useRouter()
@@ -80,6 +81,14 @@ export default function LoginPage() {
             loginStore(res.data)
             await setUserData(res.data)
             router.push('/')
+            toast.success("Đăng nhập thành công", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
         } catch (err) {
             setError("Đã xảy ra lỗi. Vui lòng thử lại.")
         } finally {
@@ -90,16 +99,15 @@ export default function LoginPage() {
     const handleOAuthLogin = async () => {
         setIsLoading(true)
 
-        const result = signIn('google', {
+        signIn('google', {
             callbackUrl: 'http://localhost:3000/isSignedIn'
         }).then(
             (result) => {
                 console.log("OAuth result:", result)
-                router.push('/register')
-
+                router.push('/isSignedIn')
             }
         ).catch(() => {
-            router.push('/register')
+            router.push('/isSignedIn')
         })
 
     }
@@ -218,7 +226,7 @@ export default function LoginPage() {
 
                             </div>
 
-                            <Button type="submit" className="w-full" disabled={isLoading}>
+                            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-500" disabled={isLoading}>
                                 {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
                             </Button>
                         </form>

@@ -13,6 +13,7 @@ import {AttendanceReport, AttendanceReportParams} from "@/types/reports.interfac
 import {CheckInStatus, CheckOutStatus} from "@/types/operation.interface";
 import {extractTimeHHMM} from "@/helpers/extractTimeHHMM";
 import LoadingComponent from "@/components/loading";
+import * as XLSX from 'xlsx';
 
 export default function ReportsPage() {
     const currentMonth = (new Date().getMonth() + 1).toString();
@@ -20,6 +21,7 @@ export default function ReportsPage() {
     const [selectedYear, setSelectedYear] = useState("2025")
     const [loading, setLoading] = useState(false)
     const [reportsData, setReportsData] = useState<AttendanceReport[]>([])
+
     const fetchData = async (): Promise<void> => {
         try {
             setLoading(true)
@@ -29,15 +31,101 @@ export default function ReportsPage() {
             }
             const res = await getMonthlyReport(params)
             setReportsData(res.data)
+            console.log("Report Data:", res.data)
             setLoading(false)
         } catch (error) {
             console.error("Error fetching report data:", error)
         }
     }
+
+    const exportToExcel = () => {
+        if (reportsData.length === 0) {
+            alert('Không có dữ liệu để xuất');
+            return;
+        }
+
+        // Tạo worksheet data với header
+        const worksheetData = [
+            // Header chính
+            [`BÁO CÁO CHẤM CÔNG THÁNG ${selectedMonth}/${selectedYear}`],
+            [], // Dòng trống
+            // Header bảng
+            [
+                'STT',
+                'Họ và tên',
+                'Email',
+                'Phòng ban',
+                'Ngày',
+                'Giờ vào',
+                'Giờ ra',
+                'Tổng giờ (h)',
+                'Trạng thái Check-in',
+                'Trạng thái Check-out',
+                'Tổng yêu cầu',
+                'YC được duyệt',
+                'YC bị từ chối'
+            ],
+            // Dữ liệu
+            ...reportsData.map((row, index) => [
+                index + 1,
+                row.user.fullname,
+                row.user.email,
+                row.user.department,
+                new Date(row.date).toLocaleDateString('vi-VN'),
+                row.checkInTime ? extractTimeHHMM(row.checkInTime) : '-',
+                row.checkOutTime ? extractTimeHHMM(row.checkOutTime) : '-',
+                row.totalHours.toFixed(1),
+                row.checkInStatus === CheckInStatus.ONTIME ? 'Đúng giờ' : 'Trễ',
+                row.checkOutStatus === CheckOutStatus.ONTIME ? 'Đúng giờ' : 'Sớm',
+                row.totalRequests,
+                row.approvedRequests,
+                row.rejectedRequests
+            ])
+        ];
+
+        // Tạo workbook và worksheet
+        const workbook = XLSX.utils.book_new();
+        const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+        // Styling cho header chính
+        const headerRange = XLSX.utils.decode_range(worksheet['!ref'] || 'A1');
+
+        // Merge cells cho header chính
+        worksheet['!merges'] = [
+            {s: {r: 0, c: 0}, e: {r: 0, c: 12}} // Merge từ A1 đến M1
+        ];
+
+        // Set column widths
+        worksheet['!cols'] = [
+            {width: 5},   // STT
+            {width: 20},  // Họ và tên
+            {width: 25},  // Email
+            {width: 15},  // Phòng ban
+            {width: 12},  // Ngày
+            {width: 10},  // Giờ vào
+            {width: 10},  // Giờ ra
+            {width: 12},  // Tổng giờ
+            {width: 18},  // Trạng thái Check-in
+            {width: 18},  // Trạng thái Check-out
+            {width: 12},  // Tổng yêu cầu
+            {width: 12},  // YC được duyệt
+            {width: 12}   // YC bị từ chối
+        ];
+
+        // Thêm worksheet vào workbook
+        XLSX.utils.book_append_sheet(workbook, worksheet, `Báo cáo ${selectedMonth}-${selectedYear}`);
+
+        // Xuất file
+        const fileName = `Bao_cao_cham_cong_${selectedMonth}_${selectedYear}.xlsx`;
+        XLSX.writeFile(workbook, fileName);
+    };
+
     useEffect(() => {
         fetchData()
     }, []);
+
     if (loading) return <LoadingComponent/>
+
     return (
         <div className="min-h-screen bg-gray-50">
             <DashboardHeader/>
@@ -98,7 +186,11 @@ export default function ReportsPage() {
                                 <Button variant="outline" onClick={fetchData}>
                                     Lọc
                                 </Button>
-                                <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500">
+                                <Button
+                                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500"
+                                    onClick={exportToExcel}
+                                    disabled={reportsData.length === 0}
+                                >
                                     <Download className="h-4 w-4"/>
                                     Xuất Excel
                                 </Button>
