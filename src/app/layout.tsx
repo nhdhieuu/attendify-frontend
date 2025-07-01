@@ -2,6 +2,7 @@ import type React from "react"
 import type {Metadata} from "next"
 import {Inter} from "next/font/google"
 import "./globals.css"
+import {ToastContainer} from "react-toastify";
 
 const inter = Inter({subsets: ["latin"]})
 
@@ -16,8 +17,12 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
+
         <html lang="vi">
-        <body className={inter.className}>{children}</body>
+        <body className={inter.className}>
+        <ToastContainer/>
+        {children}
+        </body>
         </html>
     )
 }

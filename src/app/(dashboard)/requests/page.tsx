@@ -21,10 +21,12 @@ import {
 import {DatePickerWithRange} from "@/components/date-range-picker"
 import type {DateRange} from "react-day-picker"
 import {ListRequestParams, RequestBody, RequestResponse, RequestStatus, RequestType} from "@/types/request.interface";
-import {createRequestApi, getListRequests} from "@/services/request/request.api";
+import {approveRequest, createRequestApi, getListRequests, rejectRequest} from "@/services/request/request.api";
 import {formatDateToYMD} from "@/helpers/extractTimeHHMM";
 import LoadingComponent from "@/components/loading"
 import {getUserId, getUserRole} from "@/services/cookies"
+import {useAuthStore} from "@/stores/useAuthStore";
+import {toast} from "react-toastify";
 
 const requestTypeSelect = [
     {label: "Đi trễ", value: RequestType.LATE_ARRIVAL},
@@ -55,6 +57,7 @@ export default function RequestsPage() {
     const [reason, setReason] = useState("")
     const [listRequests, setListRequests] = useState<RequestResponse[]>([])
     const [loading, setLoading] = useState(true)
+    const user = useAuthStore((state) => state.user)
     const fetchData = async () => {
         try {
             const userId = await getUserId()
@@ -75,7 +78,40 @@ export default function RequestsPage() {
     useEffect(() => {
         fetchData()
     }, [])
-
+    const onApproveRequest = async (id: string) => {
+        try {
+            const res = await approveRequest(id)
+            console.log(res.data)
+            toast.success("Duyệt thành công", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+            await fetchData()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    const onRejectRequest = async (id: string) => {
+        try {
+            const res = await rejectRequest(id)
+            console.log(res.data)
+            toast.success("Từ chối thành công", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+            await fetchData()
+        } catch (error) {
+            console.log(error)
+        }
+    }
     const handleSubmitRequest = async () => {
         if (!dateRange || !requestType || !reason.trim()) {
             alert("Vui lòng điền đầy đủ thông tin");
@@ -230,10 +266,12 @@ export default function RequestsPage() {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Loại yêu cầu</TableHead>
+                                        {user?.role == "ADMIN" && <TableHead>Người gửi</TableHead>}
                                         <TableHead>Thời gian</TableHead>
                                         <TableHead>Lý do</TableHead>
                                         <TableHead>Trạng thái</TableHead>
                                         <TableHead>Ngày gửi</TableHead>
+                                        {user?.role == "ADMIN" && <TableHead>Hành động</TableHead>}
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -251,8 +289,15 @@ export default function RequestsPage() {
                                                 })()}
                                             </TableCell>
 
+                                            {
+                                                user?.role == "ADMIN" &&
+                                                <TableCell
+                                                    className="font-medium">{request.user.fullname}
+                                                </TableCell>
+                                            }
                                             <TableCell
-                                                className="font-medium">{request.fromDate} -{">"} {request.toDate}</TableCell>
+                                                className="font-medium">{request.fromDate} -{">"} {request.toDate}
+                                            </TableCell>
                                             <TableCell>
                                                 <div className="max-w-xs truncate" title={request.reason}>
                                                     {request.reason}
@@ -260,7 +305,33 @@ export default function RequestsPage() {
                                             </TableCell>
                                             <TableCell>{getStatusBadge(request.status)}</TableCell>
                                             <TableCell
-                                                className="text-sm text-gray-500">{formatDateToYMD(request.createdAt)}</TableCell>
+                                                className="text-sm text-gray-500">{formatDateToYMD(request.createdAt)}
+                                            </TableCell>
+                                            {user?.role === "ADMIN" && (
+                                                <TableCell>
+                                                    {request.status === RequestStatus.PENDING ? (
+                                                        <div className="flex items-center gap-2">
+                                                            <Button
+                                                                className="bg-green-600 hover:bg-green-500"
+                                                                onClick={() => onApproveRequest(request.id)}
+                                                            >
+                                                                <CheckCircle className="w-4 h-4 mr-1"/>
+                                                                Duyệt
+                                                            </Button>
+                                                            <Button
+                                                                variant="outline"
+                                                                className="text-red-600 hover:text-red-600 border-red-600 hover:bg-red-50"
+                                                                onClick={() => {
+                                                                    onRejectRequest(request.id)
+                                                                }}
+                                                            >
+                                                                <XCircle className="w-4 h-4 mr-1"/>
+                                                                Từ chối
+                                                            </Button>
+                                                        </div>
+                                                    ) : null}
+                                                </TableCell>
+                                            )}
                                         </TableRow>
                                     ))}
                                 </TableBody>

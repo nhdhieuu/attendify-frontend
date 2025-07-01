@@ -22,3 +22,25 @@ export const getListRequests = async (body: ListRequestParams): Promise<ApiRespo
         throw new Error("Error fetching Data");
     }
 }
+export const approveRequest = async (id: string): Promise<ApiResponse<string | null>> => {
+    try {
+        const response = await axiosInstance.post<ApiResponse<string | null>>(
+            `requests/${id}/approve`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching Data: ", error);
+        throw new Error("Error fetching Data");
+    }
+}
+export const rejectRequest = async (id: string): Promise<ApiResponse<string | null>> => {
+    try {
+        const response = await axiosInstance.post<ApiResponse<string | null>>(
+            `requests/${id}/reject`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching Data: ", error);
+        throw new Error("Error fetching Data");
+    }
+}
+
+
