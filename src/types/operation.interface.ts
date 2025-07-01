@@ -46,3 +46,17 @@ export interface OperationHistory {
     "time": string,
     "status": OperationHistoryStatus
 }
+
+export type OperationStatus = OperationHistory;
+
+export interface CurrentOperationStatus {
+    "isCheckIn": boolean,
+    "isCheckOut": boolean,
+    "checkInTime": string | null,
+    "checkOutTime": string | null
+}
+
+export interface CheckInOutBody {
+    latitude: string,
+    longitude: string,
+}
