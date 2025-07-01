@@ -10,7 +10,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
+import {Avatar, AvatarFallback} from "@/components/ui/avatar"
 import {resetCookie} from "@/services/cookies";
 import {useRouter} from "next/navigation"
 import {useAuthStore} from "@/stores/useAuthStore";
@@ -53,8 +53,7 @@ export function DashboardHeader() {
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                                     <Avatar className="h-8 w-8">
-                                        <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User"/>
-                                        <AvatarFallback>NV</AvatarFallback>
+                                        <AvatarFallback>{user?.fullname.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                 </Button>
                             </DropdownMenuTrigger>

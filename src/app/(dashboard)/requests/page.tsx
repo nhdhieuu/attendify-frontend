@@ -152,6 +152,14 @@ export default function RequestsPage() {
             setReason("");
             setIsDialogOpen(false);
             await fetchData()
+            toast.success("Tạo yêu cầu thành công", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
         } catch (error) {
             console.log(error)
         }

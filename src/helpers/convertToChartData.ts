@@ -1,5 +1,5 @@
 import {WorkHourChartData} from "@/components/attendance-chart";
-import {Operation} from "@/types/operation.interface";
+import {Operation, OperationHistory} from "@/types/operation.interface";
 
 export const convertToChartData = (apiData: Operation[]): WorkHourChartData[] => {
     const dayMapping: { [key: number]: string } = {
@@ -41,4 +41,55 @@ export const convertToChartData = (apiData: Operation[]): WorkHourChartData[] =>
         {day: "T7", hours: weekData["T7"]},
         {day: "CN", hours: weekData["CN"]}
     ]
+}
+
+export function convertOperationHistoryToChartData(operationHistory: OperationHistory[]): WorkHourChartData[] {
+    // Nhóm các operation theo ngày
+    const operationsByDate: { [date: string]: OperationHistory[] } = {};
+
+    operationHistory.forEach(operation => {
+        const date = operation.date;
+        if (!operationsByDate[date]) {
+            operationsByDate[date] = [];
+        }
+        operationsByDate[date].push(operation);
+    });
+
+    // Tạo dữ liệu chart từ các ngày có dữ liệu
+    const chartData: WorkHourChartData[] = [];
+
+    // Sắp xếp các ngày theo thứ tự tăng dần
+    const sortedDates = Object.keys(operationsByDate).sort((a, b) =>
+        new Date(a).getTime() - new Date(b).getTime()
+    );
+
+    // Tính toán số giờ làm việc cho mỗi ngày
+    sortedDates.forEach(date => {
+        const operations = operationsByDate[date];
+
+        // Sắp xếp operations theo thời gian
+        operations.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+
+        // Tìm check-in và check-out trong ngày
+        const checkIn = operations.find(op => op.operation === "Check-in");
+        const checkOut = operations.find(op => op.operation === "Check-out");
+
+        let workHours = 0;
+        if (checkIn && checkOut) {
+            const checkInTime = new Date(checkIn.time);
+            const checkOutTime = new Date(checkOut.time);
+
+            // Tính số giờ làm việc (đơn vị: giờ)
+            workHours = (checkOutTime.getTime() - checkInTime.getTime()) / (1000 * 60 * 60);
+            workHours = Math.round(workHours * 10) / 10; // Làm tròn đến 1 chữ số thập phân
+        }
+
+        // Thêm vào chart data
+        chartData.push({
+            day: date,
+            hours: workHours
+        });
+    });
+
+    return chartData;
 }

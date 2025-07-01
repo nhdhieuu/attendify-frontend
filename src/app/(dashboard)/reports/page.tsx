@@ -122,7 +122,8 @@ export default function ReportsPage() {
                                         <TableHead>Giờ vào</TableHead>
                                         <TableHead>Giờ ra</TableHead>
                                         <TableHead>Tổng giờ</TableHead>
-                                        <TableHead>Trạng thái</TableHead>
+                                        <TableHead>Trạng thái checkin</TableHead>
+                                        <TableHead>Trạng thái checkout</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>

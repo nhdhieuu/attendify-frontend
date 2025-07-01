@@ -26,10 +26,23 @@ export interface OperationHistoryParams {
 }
 
 export interface OperationHistoryResponse {
-    data: Operation[]
+    data: OperationHistory[]
     "page": number,
     "limit": number,
     "totalElements": number,
     "totalPages": number,
     "lastPage": boolean,
+}
+
+export enum OperationHistoryStatus {
+    ONTIME = "ONTIME",
+    EARLY = "EARLY",
+    LATE = "LATE",
+}
+
+export interface OperationHistory {
+    "operation": string,
+    "date": string,
+    "time": string,
+    "status": OperationHistoryStatus
 }

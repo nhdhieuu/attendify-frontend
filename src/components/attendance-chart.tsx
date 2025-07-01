@@ -6,7 +6,7 @@ import {ChartContainer} from "@/components/ui/chart"
 import {getOperationHistory} from "@/services/operation/operation.api";
 import {OperationHistoryParams} from "@/types/operation.interface";
 import {useEffect, useState} from "react";
-import {convertToChartData} from "@/helpers/convertToChartData";
+import {convertOperationHistoryToChartData} from "@/helpers/convertToChartData";
 
 export interface WorkHourChartData {
     day: string
@@ -15,31 +15,23 @@ export interface WorkHourChartData {
 
 
 export function AttendanceChart() {
-    const [chartData, setChartData] = useState<WorkHourChartData[]>([
-        {day: "T2", hours: 0},
-        {day: "T3", hours: 0},
-        {day: "T4", hours: 0},
-        {day: "T5", hours: 0},
-        {day: "T6", hours: 0},
-        {day: "T7", hours: 0},
-        {day: "CN", hours: 0},
-    ])
+    const [chartData, setChartData] = useState<WorkHourChartData[]>([])
 
-    const fechData = async () => {
+    const fetchData = async () => {
         try {
             const params: OperationHistoryParams = {
                 page: 1,
-                limit: 7,
+                limit: 14,
             }
             const res = await getOperationHistory(params)
-            const convertedData = convertToChartData(res.data.data)
+            const convertedData = convertOperationHistoryToChartData(res.data.data)
             setChartData(convertedData)
         } catch (error) {
             console.error("Error fetching work hours data:", error)
         }
     }
     useEffect(() => {
-        fechData()
+        fetchData()
     }, [])
 
     return (
