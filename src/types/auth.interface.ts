@@ -9,3 +9,9 @@ export interface AuthRequestBody {
     email: string;
     password: string;
 }
+
+export interface LoginGoogleBody {
+    name: string,
+    email: string,
+    image: string,
+}
