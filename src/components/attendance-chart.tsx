@@ -21,7 +21,7 @@ export function AttendanceChart() {
         try {
             const params: OperationHistoryParams = {
                 page: 1,
-                limit: 14,
+                limit: 7,
             }
             const res = await getOperationHistory(params)
             const convertedData = convertOperationHistoryToChartData(res.data.data)

@@ -22,3 +22,13 @@ export const getListUsers = async (params: ListUsersParams): Promise<ApiResponse
         throw new Error("Error fetching Data");
     }
 }
+export const changePassword = async (body: { password: string }): Promise<ApiResponse<string | null>> => {
+    try {
+        const response = await axiosInstance.post<ApiResponse<string | null>>(
+            "users/me/password", body);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching Data: ", error);
+        throw new Error("Error fetching Data");
+    }
+}

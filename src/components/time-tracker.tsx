@@ -80,7 +80,9 @@ export function TimeTracker() {
         setLateDiff(0)
         setWorkingHours("00:00:00")
     }
-
+    useEffect(() => {
+        console.log(location)
+    }, [location]);
     // Calculate late time based on check-in time
     const calculateLateTime = (checkInDate: Date) => {
         const eightAM = new Date(checkInDate)
@@ -227,8 +229,8 @@ export function TimeTracker() {
             setIsActionLoading(true)
 
             const checkInBody: CheckInOutBody = {
-                latitude: /*location.latitude?.toString() ||*/ "10.757796668746575",
-                longitude: /*location.longitude?.toString() ||*/ "106.64116568100889",
+                latitude:/* location.latitude?.toString() ||*/ "10.870148438352643",
+                longitude: /*location.longitude?.toString() ||*/ "106.80384078833825",
             }
 
             const res = await checkIn(checkInBody)
@@ -256,8 +258,8 @@ export function TimeTracker() {
             setIsActionLoading(true)
 
             const checkOutBody: CheckInOutBody = {
-                latitude: /*location.latitude?.toString() ||*/ "10.757796668746575",
-                longitude: /*location.longitude?.toString() ||*/ "106.64116568100889",
+                latitude:/* location.latitude?.toString() ||*/ "10.870148438352643",
+                longitude: /*location.longitude?.toString() ||*/ "106.80384078833825",
             }
 
             const res = await checkOut(checkOutBody)
